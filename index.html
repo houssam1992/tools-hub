@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaveItPro - All Free Online Tools</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Background Remover -->
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.3.0/dist/background-removal.js"></script>
+    <!-- Image Compressor -->
+    <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+    <!-- PDF & Resume -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- PDF Merger -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- Currency -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --bg: #0b1120;
+            --card: #182237;
+            --text: #f1f5f9;
+            --subtext: #94a3b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; min-height: 100vh; }
+        
+        /* Header */
+        .header { text-align: center; margin-bottom: 40px; padding-top: 10px; }
+        .header h1 { font-size: 2.5rem; color: var(--primary); font-weight: 700; }
+        .header p { color: var(--subtext); margin-top: 5px; }
+
+        /* Grid Menu */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .tool-card { background: var(--card); padding: 25px 15px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 1px solid #334155; }
+        .tool-card:hover { transform: translateY(-6px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(108, 92, 231, 0.15); }
+        .tool-card i { font-size: 2rem; color: var(--primary); margin-bottom: 12px; }
+        .tool-card h3 { font-size: 0.95rem; font-weight: 600; }
+
+        /* Workspace */
+        #workspace { display: none; margin-top: 30px; max-width: 800px; margin-inline: auto; background: var(--card); padding: 30px; border-radius: 20px; border: 1px solid #2d3748; }
+        #back-btn { cursor: pointer; color: var(--primary); font-weight: 600; margin-bottom: 20px; display: inline-block; }
+        #back-btn i { margin-right: 8px; }
+        #tool-title { margin-bottom: 20px; font-size: 1.5rem; border-bottom: 2px solid #334155; padding-bottom: 15px; }
+
+        /* Inputs & Buttons */
+        .input-area { width: 100%; padding: 15px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; margin: 10px 0; outline: none; transition: 0.2s; }
+        .input-area:focus { border-color: var(--primary); }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; margin: 15px 0; transition: 0.2s; }
+        .btn:hover { background: #5a4bd1; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        #result-area { margin-top: 20px; padding: 20px; background: #0f172a; border-radius: 10px; display: none; text-align: center; border: 1px dashed #334155; }
+        .result-img { max-width: 100%; max-height: 350px; border-radius: 10px; margin: 10px 0; }
+        .flex-row { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+        .resume-template { background: white; color: black; padding: 20px; text-align: left; border-radius: 8px; width: 100%; max-width: 400px; margin: 0 auto; font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-tools"></i> SaveItPro Tools</h1>
+        <p>10 Free online tools for everyday tasks (No signup required)</p>
+    </div>
+
+    <div class="grid" id="menu-grid">
+        <div class="tool-card" onclick="openTool('bgremover')"><i class="fas fa-wand-magic-sparkles"></i><h3>Remove BG</h3></div>
+        <div class="tool-card" onclick="openTool('compressor')"><i class="fas fa-compress"></i><h3>Img Compress</h3></div>
+        <div class="tool-card" onclick="openTool('resume')"><i class="fas fa-file-pdf"></i><h3>Resume Builder</h3></div>
+        <div class="tool-card" onclick="openTool('password')"><i class="fas fa-lock"></i><h3>Pass Gen</h3></div>
+        <div class="tool-card" onclick="openTool('qrcode')"><i class="fas fa-qrcode"></i><h3>QR Code</h3></div>
+        <div class="tool-card" onclick="openTool('age')"><i class="fas fa-calendar-days"></i><h3>Age Calc</h3></div>
+        <div class="tool-card" onclick="openTool('textcase')"><i class="fas fa-font"></i><h3>Text Case</h3></div>
+        <div class="tool-card" onclick="openTool('pdfmerge')"><i class="fas fa-merge"></i><h3>Merge PDF</h3></div>
+        <div class="tool-card" onclick="openTool('imgconvert')"><i class="fas fa-rotate"></i><h3>Img Convert</h3></div>
+        <div class="tool-card" onclick="openTool('currency')"><i class="fas fa-dollar-sign"></i><h3>Currency</h3></div>
+    </div>
+
+    <div id="workspace">
+        <div id="back-btn" onclick="closeTool()"><i class="fas fa-arrow-left"></i> Back to Menu</div>
+        <h2 id="tool-title">Tool Name</h2>
+        <div id="tool-content"></div>
+    </div>
+
+    <script>
+        // ----- System Functions -----
+        function openTool(toolId) {
+            document.getElementById('menu-grid').style.display = 'none';
+            document.getElementById('workspace').style.display = 'block';
+            document.getElementById('tool-content').innerHTML = '';
+            document.getElementById('result-area')?.remove();
+            if(toolId === 'bgremover') loadBgRemover();
+            else if(toolId === 'compressor') loadCompressor();
+            else if(toolId === 'resume') loadResume();
+            else if(toolId === 'password') loadPassGen();
+            else if(toolId === 'qrcode') loadQR();
+            else if(toolId === 'age') loadAgeCalc();
+            else if(toolId === 'textcase') loadTextCase();
+            else if(toolId === 'pdfmerge') loadPdfMerge();
+            else if(toolId === 'imgconvert') loadImgConvert();
+            else if(toolId === 'currency') loadCurrency();
+        }
+
+        function closeTool() {
+            document.getElementById('menu-grid').style.display = 'grid';
+            document.getElementById('workspace').style.display = 'none';
+        }
+
+        function showResult(htmlContent) {
+            let resultArea = document.getElementById('result-area');
+            if(!resultArea) {
+                const container = document.getElementById('tool-content');
+                const div = document.createElement('div');
+                div.id = 'result-area';
+                container.appendChild(div);
+                resultArea = document.getElementById('result-area');
+            }
+            resultArea.innerHTML = htmlContent;
+            resultArea.style.display = 'block';
+        }
+
+        // ----- 1. Background Remover -----
+        function loadBgRemover() {
+            document.getElementById('tool-title').innerText = 'Remove Image Background';
+            document.getElementById('tool-content').innerHTML = `
+                <p class="subtext">Upload an image and remove its background instantly.</p>
+                <input type="file" id="bgInput" class="input-area" accept="image/*">
+            `;
+            document.getElementById('bgInput').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if(!file) return;
+                try {
+                    const blob = await imglyRemoveBackground(file);
+                    const url = URL.createObjectURL(blob);
+                    showResult(`
+                        <img src="${url}" class="result-img">
+                        <br><a href="${url}" download="removed-bg.png"><button class="btn btn-success">Download HD</button></a>
+                    `);
+                } catch(err) {
+                    showResult(`<p style="color:#ef4444;">Error: ${err.message}. Trying again.</p>`);
+                }
+            });
+        }
+
+        // ----- 2. Image Compressor -----
+        function loadCompressor() {
+            document.getElementById('tool-title').innerText = 'Compress Image';
+            document.getElementById('tool-content').innerHTML = `
+                <p>Upload an image, reduce its size without losing quality.</p>
+                <input type="file" id="compInput" class="input-area" accept="image/*">
+                <div class="flex-row"><span>Quality:</span> <input type="range" id="qualityRange" min="0.1" max="1" step="0.1" value="0.6"></div>
+            `;
+            document.getElementById('compInput').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if(!file) return;
+                const options = { maxSizeMB: 1, useWebWorker: true, quality: parseFloat(document.getElementById('qualityRange').value) };
+                try {
+                    const compressed = await imageCompression(file, options);
+                    const url = URL.createObjectURL(compressed);
+                    showResult(`
+                        <p>Original: ${(file.size/1024).toFixed(1)} KB</p>
+                        <p>Compressed: ${(compressed.size/1024).toFixed(1)} KB</p>
+                        <a href="${url}" download="compressed.jpg"><button class="btn btn-success">Download Compressed</button></a>
+                    `);
+                } catch(err) { showResult(`<p style="color:#ef4444;">Error: ${err.message}</p>`); }
+            });
+        }
+
+        // ----- 3. Resume Builder -----
+        let resumeCounter = 0;
+        function loadResume() {
+            document.getElementById('tool-title').innerText = 'Resume Builder (PDF)';
+            document.getElementById('tool-content').innerHTML = `
+                <div id="resumePreview" class="resume-template">
+                    <h3>Name: <span id="rName">John Doe</span></h3>
+                    <p>Email: <span id="rEmail">john@example.com</span></p>
+                    <p>Phone: <span id="rPhone">+1 234 567 890</span></p>
+                    <hr><br><b>Skills:</b> <span id="rSkills">HTML, CSS, JS</span>
+                </div>
+                <br>
+                <input type="text" class="input-area" id="inpName" placeholder="Full Name (John Doe)" value="John Doe">
+                <input type="text" class="input-area" id="inpEmail" placeholder="Email" value="john@example.com">
+                <input type="text" class="input-area" id="inpPhone" placeholder="Phone" value="+1 234 567 890">
+                <input type="text" class="input-area" id="inpSkills" placeholder="Skills (HTML, CSS, JS)" value="HTML, CSS, JS">
+                <button class="btn btn-success" onclick="downloadResume()"><i class="fas fa-download"></i> Download PDF</button>
+            `;
+            ['inpName','inpEmail','inpPhone','inpSkills'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    const key = id.replace('inp', '').toLowerCase();
+                    document.getElementById('r' + id.replace('inp','')).innerText = e.target.value;
+                });
+            });
+        }
+        function downloadResume() {
+            const el = document.getElementById('resumePreview');
+            html2canvas(el).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('resume_saveitpro.pdf');
+            });
+        }
+
+        // ----- 4. Password Generator -----
+        function loadPassGen() {
+            document.getElementById('tool-title').innerText = 'Strong Password Generator';
+            document.getElementById('tool-content').innerHTML = `
+                <div class="flex-row">
+                    <span>Length: <span id="lenDisplay">12</span></span>
+                    <input type="range" id="passLen" min="6" max="32" value="12">
+                </div>
+                <button class="btn" onclick="genPass()">Generate</button>
+                <input type="text" id="passResult" class="input-area" readonly>
+                <button class="btn btn-success" onclick="copyPass()">Copy</button>
+            `;
+            document.getElementById('passLen').addEventListener('input', () => {
+                document.getElementById('lenDisplay').innerText = document.getElementById('passLen').value;
+            });
+            genPass();
+        }
+        function genPass() {
+            const length = document.getElementById('passLen').value;
+            const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+            let password = "";
+            for (let i = 0; i < length; i++) { password += chars.charAt(Math.floor(Math.random() * chars.length)); }
+            document.getElementById('passResult').value = password;
+        }
+        function copyPass() { navigator.clipboard.writeText(document.getElementById('passResult').value); alert('Copied!'); }
+
+        // ----- 5. QR Code Generator -----
+        function loadQR() {
+            document.getElementById('tool-title').innerText = 'QR Code Generator';
+            document.getElementById('tool-content').innerHTML = `
+                <input type="text" id="qrInput" class="input-area" placeholder="Enter URL or text">
+                <button class="btn" onclick="genQR()">Generate</button>
+                <div id="qrResult" style="text-align:center; background:white; padding:15px; border-radius:8px; margin-top:15px; display:none;"></div>
+            `;
+        }
+        function genQR() {
+            const text = document.getElementById('qrInput').value;
+            if(!text) return alert('Enter text');
+            const div = document.getElementById('qrResult');
+            div.innerHTML = '';
+            new QRCode(div, { text: text, width: 180, height: 180 });
+            div.style.display = 'block';
+        }
+
+        // ----- 6. Age Calculator -----
+        function loadAgeCalc() {
+            document.getElementById('tool-title').innerText = 'Age Calculator';
+            document.getElementById('tool-content').innerHTML = `
+                <label>Date of Birth:</label>
+                <input type="date" id="dobInput" class="input-area">
+                <button class="btn" onclick="calcAge()">Calculate Age</button>
+            `;
+            document.getElementById('dobInput').valueAsDate = new Date('2000-01-01');
+        }
+        function calcAge() {
+            const birth = new Date(document.getElementById('dobInput').value);
+            const now = new Date();
+            let age = now.getFullYear() - birth.getFullYear();
+            const m = now.getMonth() - birth.getMonth();
+            if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+            showResult(`<h2 style="color:#10b981;">You are exactly <b>${age}</b> years old.</h2>`);
+        }
+
+        // ----- 7. Text Case Converter -----
+        function loadTextCase() {
+            document.getElementById('tool-title').innerText = 'Text Case Converter';
+            document.getElementById('tool-content').innerHTML = `
+                <textarea id="textInput" class="input-area" rows="5" placeholder="Type your text here"></textarea>
+                <button class="btn" onclick="convertCase('upper')">UPPERCASE</button>
+                <button class="btn" onclick="convertCase('lower')">lowercase</button>
+                <button class="btn" onclick="convertCase('capitalize')">Capitalize</button>
+            `;
+        }
+        function convertCase(type) {
+            const el = document.getElementById('textInput');
+            let val = el.value;
+            if(type === 'upper') val = val.toUpperCase();
+            else if(type === 'lower') val = val.toLowerCase();
+            else if(type === 'capitalize') val = val.replace(/\b\w/g, l => l.toUpperCase());
+            el.value = val;
+        }
+
+        // ----- 8. Merge PDF (Simple Preview) -----
+        async function loadPdfMerge() {
+            document.getElementById('tool-title').innerText = 'Merge PDFs';
+            document.getElementById('tool-content').innerHTML = `
+                <p>Select multiple PDF files.</p>
+                <input type="file" id="pdfInput" class="input-area" accept=".pdf" multiple>
+                <button class="btn" onclick="mergePdfs()">Merge & Download</button>
+            `;
+        }
+        async function mergePdfs() {
+            const files = document.getElementById('pdfInput').files;
+            if(files.length < 2) return alert('Please select at least 2 PDFs.');
+            const { PDFDocument } = PDFLib;
+            const mergedPdf = await PDFDocument.create();
+            for(const file of files) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await PDFDocument.load(arrayBuffer);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach(page => mergedPdf.addPage(page));
+            }
+            const mergedBytes = await mergedPdf.save();
+            const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            showResult(`<a href="${url}" download="merged.pdf"><button class="btn btn-success">Download Merged PDF</button></a>`);
+        }
+
+        // ----- 9. Image Converter -----
+        function loadImgConvert() {
+            document.getElementById('tool-title').innerText = 'Image Converter';
+            document.getElementById('tool-content').innerHTML = `
+                <input type="file" id="convInput" class="input-area" accept="image/*">
+                <label>Target Format:</label>
+                <select id="convFormat" class="input-area">
+                    <option value="image/jpeg">JPG</option>
+                    <option value="image/png">PNG</option>
+                    <option value="image/webp">WEBP</option>
+                </select>
+                <button class="btn" onclick="convertImg()">Convert</button>
+            `;
+        }
+        function convertImg() {
+            const file = document.getElementById('convInput').files[0];
+            const format = document.getElementById('convFormat').value;
+            if(!file) return alert('Upload an image.');
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((blob) => {
+                        const url = URL.createObjectURL(blob);
+                        showResult(`<img src="${url}" class="result-img"><br><a href="${url}" download="converted.${format.split('/')[1]}"><button class="btn btn-success">Download</button></a>`);
+                    }, format, 0.9);
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // ----- 10. Currency Converter -----
+        function loadCurrency() {
+            document.getElementById('tool-title').innerText = 'Currency Converter';
+            document.getElementById('tool-content').innerHTML = `
+                <input type="number" id="curAmount" class="input-area" value="100" placeholder="Amount">
+                <select id="curFrom" class="input-area">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="JPY">JPY</option>
+                </select>
+                <span style="display:block;text-align:center;">To</span>
+                <select id="curTo" class="input-area">
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="JPY">JPY</option>
+                </select>
+                <button class="btn" onclick="convertCurrency()">Convert</button>
+            `;
+        }
+        async function convertCurrency() {
+            const from = document.getElementById('curFrom').value;
+            const to = document.getElementById('curTo').value;
+            const amount = parseFloat(document.getElementById('curAmount').value);
+            try {
+                const res = await axios.get(`https://api.exchangerate-api.com/v4/latest/${from}`);
+                const rate = res.data.rates[to];
+                showResult(`<h2 style="color:#10b981;">${amount} ${from} = ${(amount * rate).toFixed(2)} ${to}</h2>`);
+            } catch(e) {
+                showResult(`<p style="color:#ef4444;">Error fetching rates. Try again.</p>`);
+            }
+        }
+    </script>
+</body>
+</html>
