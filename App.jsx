@@ -1,23 +1,17 @@
 import React from 'react';
-import { Route, Switch } from 'wouter';
-
-// واجهة رئيسية مؤقتة ونظيفة جداً متوافقة مع أدسنس
-const Home = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-    <h1 className="text-4xl font-bold text-gray-800 mb-4">SaveItPro Tools Hub</h1>
-    <p className="text-lg text-gray-600 text-center max-w-2xl mb-8">
-      Fast, Secure & Free Privacy-First Digital Tools. 
-      We are currently upgrading our platform to bring you advanced career and PDF tools.
-    </p>
-  </div>
-);
 
 export default function App() {
   return (
-    <Switch>
-      {/* توجيه الزائر مباشرة للواجهة النظيفة */}
-      <Route path="/" component={Home} />
-      <Route>404 Page Not Found</Route>
-    </Switch>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white p-6">
+      <div className="max-w-xl text-center">
+        <h1 className="text-4xl font-extrabold mb-4 text-emerald-400">SaveItPro</h1>
+        <p className="text-lg text-slate-300 mb-6">
+          Fast, Secure & Free Privacy-First Digital Tools. We are upgrading our platform with professional career and PDF utilities.
+        </p>
+        <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl">
+          <p className="text-sm text-slate-400">✨ New professional tools are launching soon. Stay tuned!</p>
+        </div>
+      </div>
+    </div>
   );
 }
